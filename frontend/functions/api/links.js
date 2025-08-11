@@ -1,4 +1,3 @@
-
 /**
  * 处理所有发往 /api/links 的请求
  * @param {EventContext} context - 包含请求、环境等信息的上下文对象
@@ -24,14 +23,15 @@ export async function onRequest(context) {
 async function handleGetRequest(env) {
   try {
     // env.DB 就是我们在 Pages 项目上绑定的 D1 数据库
-    const { results } = await env.DB.prepare('SELECT * FROM links ORDER BY id navigation-db').all();
+    // SQL 查询语句本身是正确的
+    const { results } = await env.DB.prepare('SELECT * FROM links ORDER BY id DESC').all();
     // 使用 JSON.stringify 手动将结果转为 JSON 字符串
     return new Response(JSON.stringify(results), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (e) {
     console.error(e);
-    return new Response('Database query failed', { status: 500 });
+    return new Response('Database query failed: ' + e.message, { status: 500 });
   }
 }
 
@@ -52,6 +52,6 @@ async function handlePostRequest(request, env) {
     return new Response(JSON.stringify({ success: true }), { status: 201 });
   } catch (e) {
     console.error(e);
-    return new Response('Database insert failed', { status: 500 });
+    return new Response('Database insert failed: ' + e.message, { status: 500 });
   }
 }

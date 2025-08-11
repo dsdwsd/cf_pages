@@ -5,7 +5,7 @@ const router = Router();
 
 // GET /api/links - 获取所有链接
 router.get('/api/links', async (request, env) => {
-  const { results } = await env.DB.prepare('SELECT * FROM links ORDER BY id DESC').all();
+  const { results } = await env.DB.prepare('SELECT * FROM links ORDER BY id navigation-db').all();
   return json(results);
 });
 

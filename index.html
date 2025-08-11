@@ -11,51 +11,17 @@
 
     <header>
         <h1>我的导航页</h1>
+
+        <form id="add-link-form">
+            <input type="text" id="link-name" placeholder="网站名称" required>
+            <input type="url" id="link-url" placeholder="网站地址 (https://...)" required>
+            <button type="submit">添加网站</button>
+        </form>
     </header>
 
     <main>
-        <div id="link-grid">
-            <a href="https://www.linux.do" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>linuxdo</span>
-            </a>
-
-            <a href="https://github.com/" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>GitHub</span>
-            </a>
-
-            <a href="https://translate.google.com/?hl=zh-CN" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>Google 翻译</span>
-
-            </a>
-
-            <a href="https://www.bilibili.com/" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>Bilibili</span>
-            </a>
-
-            <a href="https://topstip.com/e-book-resources-free-download-site/#title-2" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>电子书</span>
-
-            </a>
-
-            <a href="https://apkmody.com/" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>Mod</span>
-            </a>
-            <a href="https://pdalife.com/" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>PDALIFE</span>
-            <a href="https://gamedva.com/" target="_blank" class="link-card">
-                <div class="icon"></div>
-                <span>GameDVA</span>
-            </div>
-            
+        <div id="link-grid"></div>
     </main>
 
 </body>
 </html>
-

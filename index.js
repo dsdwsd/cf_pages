@@ -1,26 +1,92 @@
-// 当整个页面加载完毕后执行
 document.addEventListener('DOMContentLoaded', () => {
+    const linkGrid = document.getElementById('link-grid');
+    const addLinkForm = document.getElementById('add-link-form');
+    const linkNameInput = document.getElementById('link-name');
+    const linkUrlInput = document.getElementById('link-url');
 
-    // 1. 获取所有的链接卡片元素
-    const linkCards = document.querySelectorAll('.link-card');
+    /**
+     * 从后端 API 加载链接并渲染到页面
+     */
+    async function loadLinksFromServer() {
+        try {
+            // 使用 fetch 调用我们的 Worker API
+            const response = await fetch('/api/links');
+            if (!response.ok) throw new Error('Failed to fetch links');
+            const links = await response.json();
 
-    // 2. 遍历每一个卡片
-    linkCards.forEach(card => {
-        // 3. 从卡片的 href 属性中获取目标网站的 URL
-        const url = new URL(card.href);
-        const domain = url.hostname; // 提取出域名，例如 "www.github.com"
-
-        // 4. 构建获取图标的 API 地址
-        // 我们使用 Google 的免费服务，它很稳定。sz=64 表示我们想要 64x64 像素的图标
-        const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${domain}`;
-
-        // 5. 在卡片中找到图标元素
-        const iconDiv = card.querySelector('.icon');
-
-        // 6. 将获取到的图标 URL 设置为图标元素的背景图片
-        if (iconDiv) {
-            iconDiv.style.backgroundImage = `url(${faviconUrl})`;
+            // 渲染页面
+            renderLinks(links);
+        } catch (error) {
+            console.error('Error loading links:', error);
+            linkGrid.innerHTML = '<p style="color: red;">无法加载链接，请检查后端服务是否正常。</p>';
         }
-    });
+    }
 
+    /**
+     * 将链接数据渲染成卡片
+     * @param {Array} links - 从 API 获取的链接数组
+     */
+    function renderLinks(links) {
+        linkGrid.innerHTML = '';
+        links.forEach(link => {
+            const card = createLinkCard(link);
+            linkGrid.appendChild(card);
+        });
+    }
+
+    // 创建卡片的函数和之前一样
+    function createLinkCard(link) {
+        const card = document.createElement('a');
+        card.href = link.url;
+        card.target = '_blank';
+        card.className = 'link-card';
+
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'icon';
+        const domain = new URL(link.url).hostname;
+        iconDiv.style.backgroundImage = `url(https://icons.duckduckgo.com/ip3/${domain}.ico)`;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = link.name;
+
+        card.appendChild(iconDiv);
+        card.appendChild(nameSpan);
+        return card;
+    }
+
+    /**
+     * 处理表单提交，将新链接发送到后端 API
+     */
+    async function handleAddLink(event) {
+        event.preventDefault();
+        const name = linkNameInput.value.trim();
+        const url = linkUrlInput.value.trim();
+
+        if (name && url) {
+            try {
+                const response = await fetch('/api/links', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, url }),
+                });
+
+                if (!response.ok) throw new Error('Failed to add link');
+
+                // 添加成功后，清空输入框并重新从服务器加载所有链接
+                addLinkForm.reset();
+                loadLinksFromServer();
+            } catch (error) {
+                console.error('Error adding link:', error);
+                alert('添加失败，请重试。');
+            }
+        }
+    }
+
+    // 添加事件监听
+    addLinkForm.addEventListener('submit', handleAddLink);
+
+    // 页面加载时，自动从服务器获取数据
+    loadLinksFromServer();
 });
